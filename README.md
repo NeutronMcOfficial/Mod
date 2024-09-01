@@ -31,7 +31,8 @@ Our goal is to create a Minecraft client by the Minecraft community, for the Min
  - Custom Hit Box
  - Fulbright
  - Customisable Hurt Cam
-
+ - Friend System
+ - Built in Voice Chat
 ### Why Should You Use Our Client Over Others?
 
 NeutronMc stands out because our code is entirely public. Anyone can contribute to its development, and we ensure that all code is thoroughly reviewed before being merged into the client. You have full transparency and can inspect the entire codebase if you wish.
