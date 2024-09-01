@@ -1,0 +1,31 @@
+{
+	"schemaVersion": 1,
+	"id": "neutronmc",
+	"version": "${version}",
+	"name": "NeutronMc",
+	"description": "This is the neutronmc client",
+	"authors": [
+		"MiniPandi"
+	],
+	"contact": {
+		"homepage": "https://neutronmc.com",
+		"sources": "https://github.com/NeutronClient/Mod"
+	},
+	"license": "All-Rights-Reserved",
+	"icon": "assets/neutronmc/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"com.neutronmc.mod.Main"
+		]
+	},
+	"mixins": [
+		"neutronmc.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.16.3",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}

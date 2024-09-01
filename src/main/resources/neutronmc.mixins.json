@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"package": "com.neutronmc.mod.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"MinecraftClientMixin",
+		"WindowMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
