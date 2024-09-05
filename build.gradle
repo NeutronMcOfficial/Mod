@@ -19,7 +19,19 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	implementation "io.github.spair:imgui-java-app:${project.imgui_version}"
+
+	include implementation("io.github.spair:imgui-java-binding:${project.imgui_version}")
+	include implementation("io.github.spair:imgui-java-lwjgl3:${project.imgui_version}")
+
+	include implementation("io.github.spair:imgui-java-natives-windows:${project.imgui_version}")
+	include implementation("io.github.spair:imgui-java-natives-linux:${project.imgui_version}")
+	include implementation("io.github.spair:imgui-java-natives-macos:${project.imgui_version}")
+
+	compileOnly 'org.projectlombok:lombok:1.18.34'
+	annotationProcessor 'org.projectlombok:lombok:1.18.34'
+
+	testCompileOnly 'org.projectlombok:lombok:1.18.34'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.34'
 }
 
 processResources {
