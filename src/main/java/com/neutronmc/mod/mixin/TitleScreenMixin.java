@@ -27,6 +27,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -84,7 +85,11 @@ public abstract class TitleScreenMixin extends Screen {
 
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private void render(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        this.renderPanoramaBackground(context, delta);
+        RenderSystem.enableBlend();
+        context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        context.fillGradient(0, 0, width, height, ColorHelper.Argb.getArgb(255, 107, 91, 149), ColorHelper.Argb.getArgb(255, 0, 0, 0));
+        context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.disableBlend();
         ImGuiImpl.draw(io -> {
 
             ImGui.begin("NeutronMc", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBackground);
