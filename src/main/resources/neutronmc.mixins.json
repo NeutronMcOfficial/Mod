@@ -5,7 +5,8 @@
 	"mixins": [
 		"MinecraftClientMixin",
 		"WindowMixin",
-		"TitleScreenMixin"
+		"TitleScreenMixin",
+		"DirectConnectionMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
