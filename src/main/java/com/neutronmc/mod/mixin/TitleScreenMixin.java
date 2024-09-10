@@ -1,49 +1,36 @@
 package com.neutronmc.mod.mixin;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.neutronmc.mod.Main;
 import com.neutronmc.mod.imgui.ImGuiImpl;
 import imgui.*;
 import imgui.flag.ImGuiCol;
-import imgui.flag.ImGuiCond;
-import imgui.flag.ImGuiStyleVar;
 import imgui.flag.ImGuiWindowFlags;
-import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.LogoDrawer;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.SplashTextRenderer;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerWarningScreen;
 import net.minecraft.client.gui.screen.option.OptionsScreen;
 import net.minecraft.client.gui.screen.world.SelectWorldScreen;
-import net.minecraft.client.realms.gui.screen.RealmsNotificationsScreen;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.Text;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.math.MathHelper;
-import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.*;
+import java.util.List;
 
 @Mixin(TitleScreen.class)
 public abstract class TitleScreenMixin extends Screen {
+    private static Point2D[] points = new Point2D[0];
+    private static Integer currentWidth = 0;
+    private static Integer currentHeight = 0;
 
     protected TitleScreenMixin(Text title) {
         super(title);
@@ -71,6 +58,12 @@ public abstract class TitleScreenMixin extends Screen {
 
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private void render(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+        Screen currentScreen = MinecraftClient.getInstance().currentScreen;
+        if (currentWidth != currentScreen.width || currentHeight != currentScreen.height) {
+            points = getRandomPoints(this.width, this.height, 200);
+            currentWidth = currentScreen.width;
+            currentHeight = currentScreen.height;
+        }
         RenderSystem.enableBlend();
         context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         context.fill(0, 0, width, height, ColorHelper.Argb.getArgb(255, 15, 17, 20));
@@ -125,8 +118,49 @@ public abstract class TitleScreenMixin extends Screen {
             ImGui.text(footerText);
             ImGui.popFont();
 
+            ImDrawList drawList = ImGui.getWindowDrawList();
+            float cursorX = (float) MinecraftClient.getInstance().mouse.getX();
+            float cursorY = (float) MinecraftClient.getInstance().mouse.getY();
+            int color = ImGui.getColorU32(1, 1, 1, 1);
+
+            for (Point2D point : points) {
+                float x = (float) point.getX();
+                float y = (float) point.getY();
+                drawList.addCircleFilled(x, y, 5, color);
+            }
+
+            Point2D[] nearestPoints = getNearestPoints(points, cursorX, cursorY, 4);
+            for (Point2D nearestPoint : nearestPoints) {
+                double x = nearestPoint.getX();
+                double y = nearestPoint.getY();
+                drawList.addLine((float) x, (float) y, cursorX, cursorY, color, 2f);
+            }
+
             ImGui.end();
         });
         ci.cancel();
     }
+
+    private static Point2D[] getNearestPoints(Point2D[] points, double x, double y, int numPoints) {
+        // Create a comparator to sort the points by their distance to (x, y)
+        Comparator<Point2D> comparator = Comparator.comparingDouble(p -> p.distance(x, y));
+
+        // Sort the points array based on their distance to the given (x, y)
+        Arrays.sort(points, comparator);
+
+        // Return the closest numPoints points (or fewer if the array has fewer points)
+        return Arrays.copyOf(points, Math.min(numPoints, points.length));
+    }
+
+
+    private static Point2D[] getRandomPoints(double width, double height, int amount) {
+        Point2D[] points = new Point2D[amount];
+        for (int i = 0; i < amount; i++) {
+            double x = ((Math.random() * (width - 0)) + 0) * 4;
+            double y = ((Math.random() * (height - 0)) + 0) * 4;
+            points[i] = new Point2D.Double(x, y);
+        }
+        return points;
+    }
+
 }
